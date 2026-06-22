@@ -4,6 +4,7 @@ Imports System.IO
 Imports System.IO.Enumeration
 Imports System.Numerics
 Imports System.Reflection.Metadata.Ecma335
+Imports System.Security.Cryptography
 
 Module Program
     ' sets populations + population of the new generation + number of generations as integers
@@ -17,6 +18,10 @@ Module Program
     Dim overwrite As String
     Dim flag As Boolean = False
     Dim current_gen As Integer = 1
+    Dim gen_juveniles(25) As Integer
+    Dim gen_adults(25) As Integer
+    Dim gen_seniles(25) As Integer
+    ' Dim all_generations(25, 25, 25) As Integer
     Sub Main()
         While True
             Menu()
@@ -48,10 +53,14 @@ Module Program
 
             Console.WriteLine("Total: {0}", Num_new_J + Num_new_A + Num_new_S)
 
-            current_gen = current_gen + 1
+            current_gen += 1
             juveniles = Num_new_J
             adults = Num_new_A
             seniles = Num_new_S
+            gen_juveniles(current_gen) = juveniles
+            gen_adults(current_gen) = adults
+            gen_seniles(current_gen) = seniles
+            'all_generations(gen_juveniles(total_gen), gen_adults(total_gen), gen_seniles(total_gen))
 
         End While
 
@@ -106,26 +115,47 @@ Module Program
 
     Sub Export()
         Console.WriteLine("Export data")
+
         While flag = False
-            Console.WriteLine("Enter a suitable filename:")
+            Console.Write("Enter a suitable filename:")
             filename = Console.ReadLine()
             ' check whether file name by user already exists
-            If Dir(filename) <> "" Then
+            If File.Exists(filename) Then
                 Console.WriteLine("File exists")
-
                 Console.WriteLine("Would you like to overwrite the file?")
                 Console.Write("Enter Y/N:")
-                UCase(overwrite = Console.ReadLine())   ' String to convert.
+                overwrite = Console.ReadLine()
+                overwrite = overwrite.ToUpper() ' String to convert.
+                Dim outputfile As FileStream = New FileStream(filename, FileMode.Create, FileAccess.Write)
 
                 If overwrite = "Y" Then
                     flag = True ' overwrite the file and save the data
+                    current_gen = 0
+                    While current_gen < total_gen
+                        Dim OutputString As String = String.Format("{0},{1},{2}", gen_juveniles(current_gen), gen_adults(current_gen), gen_seniles(current_gen))
+                        outputfile.Write(System.Text.Encoding.Unicode.GetBytes(OutputString))
+                        current_gen += 1
+                    End While
+                    outputfile.Close()
+                    ' File.WriteAllText(outputfile, "test")
+                    Console.WriteLine("File saved")
                 Else
                     flag = False ' don't overwrite the file
                 End If
             Else
                 Console.WriteLine("File does not exist")
                 flag = True
+                Dim outputfile As FileStream = New FileStream(filename, FileMode.CreateNew, FileAccess.Write)
+                current_gen = 0
+                While current_gen < total_gen
+                    Dim OutputString As String = String.Format("{0},{1},{2}", gen_juveniles(current_gen), gen_adults(current_gen), gen_seniles(current_gen))
+                    outputfile.Write(System.Text.Encoding.Unicode.GetBytes(OutputString))
+                    current_gen += 1
+                End While
+                outputfile.Close()
                 ' save collected data to file
+                'File.WriteAllText(filename, gen_juveniles(total_gen), gen_adults(total_gen), gen_seniles(total_gen))
+                Console.WriteLine("File saved")
             End If
         End While
     End Sub
