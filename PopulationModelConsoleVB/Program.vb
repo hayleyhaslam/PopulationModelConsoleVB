@@ -5,7 +5,7 @@ Imports System.IO.Enumeration
 Imports System.Numerics
 Imports System.Reflection.Metadata.Ecma335
 Imports System.Security.Cryptography
-
+' edit Export() to be more accurate and refined
 Module Program
     ' sets populations + population of the new generation + number of generations as integers
     ' sets Survival rate (SR) + birth rate as decimal
@@ -21,49 +21,13 @@ Module Program
     Dim gen_juveniles(25) As Integer
     Dim gen_adults(25) As Integer
     Dim gen_seniles(25) As Integer
-    ' Dim all_generations(25, 25, 25) As Integer
+    Dim disease_factor As Decimal = (0.5 * Rnd()) + 0.2
+    Dim Disease As String
+
     Sub Main()
         While True
             Menu()
         End While
-    End Sub
-
-    Sub RunModel()
-        Console.WriteLine("Run model")
-        ' displays the 0 generation populations + total
-        Console.WriteLine("0 generation:")
-        Console.WriteLine("Juveniles: {0}", juveniles)
-        Console.WriteLine("Adults: {0}", adults)
-        Console.WriteLine("Seniles: {0}", seniles)
-        'calculates total pop
-        Console.WriteLine("Total: {0}", juveniles + adults + seniles)
-
-        'a loop which continues until all the necessary generations have been calculated and displayed
-        While current_gen <= total_gen
-
-            Console.WriteLine(current_gen, "Generation: {0}")
-            Num_new_J = adults * birth_rate
-            Console.WriteLine("New Juveniles: {0}", Num_new_J)
-
-            Num_new_A = juveniles * J_SR
-            Console.WriteLine("New Adults: {0}", Num_new_A)
-
-            Num_new_S = (adults * A_SR) + (seniles * S_SR)
-            Console.WriteLine("New Seniles: {0}", Num_new_S)
-
-            Console.WriteLine("Total: {0}", Num_new_J + Num_new_A + Num_new_S)
-
-            current_gen += 1
-            juveniles = Num_new_J
-            adults = Num_new_A
-            seniles = Num_new_S
-            gen_juveniles(current_gen) = juveniles
-            gen_adults(current_gen) = adults
-            gen_seniles(current_gen) = seniles
-            'all_generations(gen_juveniles(total_gen), gen_adults(total_gen), gen_seniles(total_gen))
-
-        End While
-
     End Sub
 
     Sub SetGeneration()
@@ -71,27 +35,45 @@ Module Program
         ' prompts + gets the user for the population of Juveniles, adults and seniles
         ' prompts + gets the user for the survival rates (SR) of the populations (J, A, S)
 
-        Console.WriteLine("Enter population of Juveniles:")
+
+        Console.Write("Enter population of Juveniles in thousands:")
         juveniles = Console.ReadLine()
-        Console.WriteLine("Survival rate:")
-        J_SR = Console.ReadLine()
-        Console.WriteLine("Enter population of Adults:")
+        Do                                       ' checks whether the survival rate is in the correct range  
+            Console.Write("Survival rate:")      ' continues the program if true otherwise continues asking for valid input
+            J_SR = Console.ReadLine()
+
+        Loop While J_SR < 0 OrElse J_SR > 1
+
+
+        Console.Write("Enter population of Adults in thousands:")
         adults = Console.ReadLine()
-        Console.WriteLine("Survival rate:")
-        A_SR = Console.ReadLine()
-        Console.WriteLine("Enter population of Seniles:")
+        Do
+            Console.Write("Survival rate:")
+            A_SR = Console.ReadLine()
+
+        Loop While A_SR < 0 OrElse A_SR > 1
+
+        Console.Write("Enter population of Seniles in thousands:")
         seniles = Console.ReadLine()
-        Console.WriteLine("Survival rate:")
-        S_SR = Console.ReadLine()
+        Do
+            Console.Write("Survival rate:")
+            S_SR = Console.ReadLine()
+
+        Loop While S_SR < 0 OrElse S_SR > 1
 
         ' prompts + gets the birth rate
         Console.WriteLine("Birth rate of adult greenfly:")
         birth_rate = Console.ReadLine()
 
         ' prompts user for the number of generations to calculate
-        Console.WriteLine("How many future generations? between 5 and 25:")
-        total_gen = Console.ReadLine()
+        Do
+            Console.WriteLine("How many future generations? between 5 and 25:")
+            total_gen = Console.ReadLine()
+        Loop While total_gen < 5 OrElse total_gen > 25
 
+        Console.WriteLine("Would you like to implement the disease factor? Y/N")
+        Disease = Console.ReadLine()
+        Disease = Disease.ToUpper()
     End Sub
 
     Sub Display()
@@ -110,6 +92,69 @@ Module Program
         Console.WriteLine("Birth_rate: {0}", birth_rate)
         ' display number of generations to calculate
         Console.WriteLine("Number of Generations: {0}", total_gen)
+
+    End Sub
+
+    Sub RunModel()
+        Console.WriteLine("Run model")
+        ' displays the 0 generation populations + total
+        Console.WriteLine("Generation 0")
+        Console.WriteLine("Juveniles: {0}", juveniles)
+        Console.WriteLine("Adults: {0}", adults)
+        Console.WriteLine("Seniles: {0}", seniles)
+        'calculates total pop
+        Console.WriteLine("Total: {0}", juveniles + adults + seniles)
+
+        If Disease = "Y" Then
+            While current_gen <= total_gen
+
+                Console.WriteLine("Generation {0}", current_gen)
+                Num_new_J = adults * birth_rate * disease_factor
+                Console.WriteLine("New Juveniles: {0}", Num_new_J)
+
+                Num_new_A = juveniles * J_SR
+                Console.WriteLine("New Adults: {0}", Num_new_A)
+
+                Num_new_S = (adults * A_SR) + (seniles * S_SR) * disease_factor
+                Console.WriteLine("New Seniles: {0}", Num_new_S)
+
+                Console.WriteLine("Total: {0}", Num_new_J + Num_new_A + Num_new_S)
+
+                current_gen += 1
+                juveniles = Num_new_J
+                adults = Num_new_A
+                seniles = Num_new_S
+                gen_juveniles(current_gen) = juveniles
+                gen_adults(current_gen) = adults
+                gen_seniles(current_gen) = seniles
+
+            End While
+        Else
+            'a loop which continues until all the necessary generations have been calculated and displayed
+            While current_gen <= total_gen
+
+                Console.WriteLine("Generation {0}", current_gen)
+                Num_new_J = adults * birth_rate
+                Console.WriteLine("New Juveniles: {0}", Num_new_J)
+
+                Num_new_A = juveniles * J_SR
+                Console.WriteLine("New Adults: {0}", Num_new_A)
+
+                Num_new_S = (adults * A_SR) + (seniles * S_SR)
+                Console.WriteLine("New Seniles: {0}", Num_new_S)
+
+                Console.WriteLine("Total: {0}", Num_new_J + Num_new_A + Num_new_S)
+
+                current_gen += 1
+                juveniles = Num_new_J
+                adults = Num_new_A
+                seniles = Num_new_S
+                gen_juveniles(current_gen) = juveniles
+                gen_adults(current_gen) = adults
+                gen_seniles(current_gen) = seniles
+
+            End While
+        End If
 
     End Sub
 
@@ -159,6 +204,8 @@ Module Program
             End If
         End While
     End Sub
+
+
     Sub Menu()
         Dim options As String() = {"Set the Generation 0 Values", "Display the Generation 0 Values", "Run the model", "Export data", "Quit"}
 
