@@ -21,8 +21,8 @@ Module Program
     Dim gen_juveniles(25) As Integer
     Dim gen_adults(25) As Integer
     Dim gen_seniles(25) As Integer
-    Dim disease_factor As Decimal = (0.5 * Rnd()) + 0.2
-    Dim Disease As String
+    Dim disease_factor As Decimal = 1
+    Dim Trigger_point? As Integer
 
     Sub Main()
         While True
@@ -72,8 +72,10 @@ Module Program
         Loop While total_gen < 5 OrElse total_gen > 25
 
         Console.WriteLine("Would you like to implement the disease factor? Y/N")
-        Disease = Console.ReadLine()
-        Disease = Disease.ToUpper()
+        If Console.ReadLine().ToUpper() = "Y" Then
+            Console.WriteLine("Enter the trigger point:")
+            Trigger_point = Console.ReadLine()
+        End If
     End Sub
 
     Sub Display()
@@ -97,6 +99,7 @@ Module Program
 
     Sub RunModel()
         Console.WriteLine("Run model")
+
         ' displays the 0 generation populations + total
         Console.WriteLine("Generation 0")
         Console.WriteLine("Juveniles: {0}", juveniles)
@@ -105,56 +108,34 @@ Module Program
         'calculates total pop
         Console.WriteLine("Total: {0}", juveniles + adults + seniles)
 
-        If Disease = "Y" Then
-            While current_gen <= total_gen
+        'a loop which continues until all the necessary generations have been calculated and displayed
+        While current_gen <= total_gen
 
-                Console.WriteLine("Generation {0}", current_gen)
-                Num_new_J = adults * birth_rate * disease_factor
-                Console.WriteLine("New Juveniles: {0}", Num_new_J)
+            If Trigger_point.HasValue And (Num_new_J + Num_new_A + Num_new_S) > Trigger_point Then
+                disease_factor = (0.5 * Rnd()) + 0.2
+            End If
 
-                Num_new_A = juveniles * J_SR
-                Console.WriteLine("New Adults: {0}", Num_new_A)
+            Console.WriteLine("Generation {0}", current_gen)
+            Num_new_J = adults * birth_rate * disease_factor
+            Console.WriteLine("New Juveniles: {0}", Num_new_J)
 
-                Num_new_S = (adults * A_SR) + (seniles * S_SR) * disease_factor
-                Console.WriteLine("New Seniles: {0}", Num_new_S)
+            Num_new_A = juveniles * J_SR
+            Console.WriteLine("New Adults: {0}", Num_new_A)
 
-                Console.WriteLine("Total: {0}", Num_new_J + Num_new_A + Num_new_S)
+            Num_new_S = (adults * A_SR) + (seniles * S_SR) * disease_factor
+            Console.WriteLine("New Seniles: {0}", Num_new_S)
 
-                current_gen += 1
-                juveniles = Num_new_J
-                adults = Num_new_A
-                seniles = Num_new_S
-                gen_juveniles(current_gen) = juveniles
-                gen_adults(current_gen) = adults
-                gen_seniles(current_gen) = seniles
+            Console.WriteLine("Total: {0}", Num_new_J + Num_new_A + Num_new_S)
 
-            End While
-        Else
-            'a loop which continues until all the necessary generations have been calculated and displayed
-            While current_gen <= total_gen
+            current_gen += 1
+            juveniles = Num_new_J
+            adults = Num_new_A
+            seniles = Num_new_S
+            gen_juveniles(current_gen) = juveniles
+            gen_adults(current_gen) = adults
+            gen_seniles(current_gen) = seniles
 
-                Console.WriteLine("Generation {0}", current_gen)
-                Num_new_J = adults * birth_rate
-                Console.WriteLine("New Juveniles: {0}", Num_new_J)
-
-                Num_new_A = juveniles * J_SR
-                Console.WriteLine("New Adults: {0}", Num_new_A)
-
-                Num_new_S = (adults * A_SR) + (seniles * S_SR)
-                Console.WriteLine("New Seniles: {0}", Num_new_S)
-
-                Console.WriteLine("Total: {0}", Num_new_J + Num_new_A + Num_new_S)
-
-                current_gen += 1
-                juveniles = Num_new_J
-                adults = Num_new_A
-                seniles = Num_new_S
-                gen_juveniles(current_gen) = juveniles
-                gen_adults(current_gen) = adults
-                gen_seniles(current_gen) = seniles
-
-            End While
-        End If
+        End While
 
     End Sub
 
