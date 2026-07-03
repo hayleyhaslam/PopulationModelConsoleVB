@@ -105,6 +105,7 @@ Module Program
         Console.WriteLine("Juveniles: {0}", juveniles)
         Console.WriteLine("Adults: {0}", adults)
         Console.WriteLine("Seniles: {0}", seniles)
+                        
         'calculates total pop
         Console.WriteLine("Total: {0}", juveniles + adults + seniles)
 
@@ -141,51 +142,36 @@ Module Program
 
     Sub Export()
         Console.WriteLine("Export data")
-
-        While flag = False
-            Console.Write("Enter a suitable filename:")
-            filename = Console.ReadLine()
-            ' check whether file name by user already exists
-            If File.Exists(filename) Then
-                Console.WriteLine("File exists")
-                Console.WriteLine("Would you like to overwrite the file?")
-                Console.Write("Enter Y/N:")
-                overwrite = Console.ReadLine()
-                overwrite = overwrite.ToUpper() ' String to convert.
-                Dim outputfile As FileStream = New FileStream(filename, FileMode.Create, FileAccess.Write)
-
-                If overwrite = "Y" Then
-                    flag = True ' overwrite the file and save the data
-                    current_gen = 0
-                    While current_gen < total_gen
-                        Dim OutputString As String = String.Format("{0},{1},{2}", gen_juveniles(current_gen), gen_adults(current_gen), gen_seniles(current_gen))
-                        outputfile.Write(System.Text.Encoding.Unicode.GetBytes(OutputString))
-                        current_gen += 1
-                    End While
-                    outputfile.Close()
-                    ' File.WriteAllText(outputfile, "test")
-                    Console.WriteLine("File saved")
-                Else
-                    flag = False ' don't overwrite the file
-                End If
+        Dim outputFile As FileStream = Nothing
+        
+        Console.Write("Enter a suitable filename:")
+        filename = Console.ReadLine()
+        If File.Exists(filename) Then
+            Console.WriteLine("File exists")
+            Console.WriteLine("Would you like to overwrite the file?")
+            Console.Write("Enter Y/N:")
+            overwrite = Console.ReadLine()
+            overwrite = overwrite.ToUpper()
+            If overwrite = "Y" Then
+                outputfile = New FileStream(filename, FileMode.Create, FileAccess.Write)
             Else
-                Console.WriteLine("File does not exist")
-                flag = True
-                Dim outputfile As FileStream = New FileStream(filename, FileMode.CreateNew, FileAccess.Write)
-                current_gen = 0
-                While current_gen < total_gen
-                    Dim OutputString As String = String.Format("{0},{1},{2}", gen_juveniles(current_gen), gen_adults(current_gen), gen_seniles(current_gen))
-                    outputfile.Write(System.Text.Encoding.Unicode.GetBytes(OutputString))
-                    current_gen += 1
-                End While
-                outputfile.Close()
-                ' save collected data to file
-                'File.WriteAllText(filename, gen_juveniles(total_gen), gen_adults(total_gen), gen_seniles(total_gen))
-                Console.WriteLine("File saved")
+                Console.WriteLine("Refusing to overwrite file, abort export.")
             End If
-        End While
-    End Sub
+        Else
+            outputfile = New FileStream(filename, FileMode.CreateNew, FileAccess.Write)
+        End If
 
+        If outputfile IsNot Nothing Then
+            current_gen = 0
+            While current_gen < total_gen
+                Dim OutputString As String = String.Format("{0},{1},{2}", gen_juveniles(current_gen), gen_adults(current_gen), gen_seniles(current_gen))
+                outputfile.Write(System.Text.Encoding.Unicode.GetBytes(OutputString))
+                current_gen += 1
+            End While
+            outputfile.Close()
+            Console.WriteLine("File saved")
+        End If
+    End Sub
 
     Sub Menu()
         Dim options As String() = {"Set the Generation 0 Values", "Display the Generation 0 Values", "Run the model", "Export data", "Quit"}
