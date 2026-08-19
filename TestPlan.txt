@@ -1,0 +1,14 @@
+1. Setting Generations: - when user enters 0 the program allows them to set the gen 0 values 
+
+2. Displaying Generation 0: - when user enters 1 the program lays out the collected data for gen 0   
+
+3. Running Generation Model: - when user enters 2 the program calculates the new populations for J, A + S for each generation
+                             - applies the disease factor to any new generations which are above the assigned trigger point if implemented
+                             - displays each of the new generations (showing each population + the total) as well as the disease factor for each gen (if applied)
+
+4. Exporting Collected Data: - when user enters 3 the program prompts them for a file name
+                             - if the file exists, user chooses whether they want to overwrite it (yes- overwrites and saves file; no- aborts export and returns to main menu)
+                             - if file doesn't exist, file is saved with chosen name 
+
+5. Making sure entering 4 quits the program
+6. the exported file should be able to be opened with a clearly shown grid of values 
