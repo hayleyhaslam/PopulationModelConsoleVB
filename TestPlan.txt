@@ -1,14 +1,20 @@
-1. Setting Generations: - when user enters 0 the program allows them to set the gen 0 values 
+1. Setting Generations: - if user enters 0 the program should prompt them to set the gen 0 values + the BR + SR
+                        - if a value for the SR is out of range such as 3 is entered user is asked to enter it again
+                        - bugs in the program (for other values such as the initial pop sizes) will make it crash if a string is entered + the program allows negatives
+                        - if the user enters Y or y and not N or n for the disease factor then they should be prompted for the trigger point
 
-2. Displaying Generation 0: - when user enters 1 the program lays out the collected data for gen 0   
+2. Displaying Generation 0: - if user enters 1 after 0 (setting values) in menu the program should display all the data collected from the user
+                            - if the user enters 1 at the menu before 0 (setting values) the program should display all values as 0 
 
-3. Running Generation Model: - when user enters 2 the program calculates the new populations for J, A + S for each generation
-                             - applies the disease factor to any new generations which are above the assigned trigger point if implemented
-                             - displays each of the new generations (showing each population + the total) as well as the disease factor for each gen (if applied)
+3. Running Generation Model: - if user enters 2 after 0 at the menu then the program should go through the calculations before displaying them (calc pop sizes of each gen)
+                             - if applied, the disease factor should affect any generation exceeding/ meeting the trigger point (e.g. trigger point = 80 and total = 100 the disease factor should be calculated and applied to the Js and Ss continuing for any generation exceeding a total of 80)
+                             - the program should display 5 generations as well as generation 0 if 5 new generations were entered by the user 
+                             - the pop total for each gen should increase each time unless the disease factor has been implemented 
 
-4. Exporting Collected Data: - when user enters 3 the program prompts them for a file name
-                             - if the file exists, user chooses whether they want to overwrite it (yes- overwrites and saves file; no- aborts export and returns to main menu)
-                             - if file doesn't exist, file is saved with chosen name 
+4. Exporting Collected Data: - if the user enters 3 the program should ask them to enter a valid filename 
+                             - if the user enters 'file.CSV' and that filename already exists the program should ask the user to overwrite the file 
+                             - if the user enters Y or y the file should be overwritten and the new 'file.CSV' should be saved returning to menu
+                             - if the user enters N or n the program should abort the export returning to the main menu without saving the file
+                             - if 'file.CSV' doesn't exist the program should save it as a new file and return to main menu 
 
-5. Making sure entering 4 quits the program
-6. the exported file should be able to be opened with a clearly shown grid of values 
+5. if the user enters 4 at the menu the program should immediately stop/ shut 
